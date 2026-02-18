@@ -145,6 +145,12 @@
 
     @media (max-width: 640px) {
       .metrics { grid-template-columns: repeat(2, 1fr); }
+      .container { margin: 10px auto; padding: 0 12px; }
+      .app-header { flex-direction: column; gap: 16px; }
+      .brand { width: 100%; justify-content: center; }
+      .quick-actions { width: 100%; justify-content: center; }
+      .card-h { flex-direction: column; align-items: flex-start; }
+      .card-h .icon { position: absolute; top: 16px; right: 16px; }
     }
   </style>
 </head>
@@ -656,7 +662,15 @@
 
     // Events
     function setupEvents() {
-      qs('#btn-geolocate').addEventListener('click', geolocateToInput);
+      qs('#btn-geolocate').addEventListener('click', async () => {
+        const val = await geolocateToInput();
+        if (val) {
+          const active = qs('.tab.active').dataset.tab;
+          if (active === 'current') getCurrent().catch(e => setStatus(e.message, 'error'));
+          if (active === 'historical') getHistorical().catch(e => setStatus(e.message, 'error'));
+          if (active === 'marine') getMarine().catch(e => setStatus(e.message, 'error'));
+        }
+      });
       qs('#fetch-current').addEventListener('click', () => getCurrent().catch(e => setStatus(e.message, 'error')));
       qs('#fetch-historical').addEventListener('click', () => getHistorical().catch(e => setStatus(e.message, 'error')));
       qs('#fetch-marine').addEventListener('click', () => getMarine().catch(e => setStatus(e.message, 'error')));
