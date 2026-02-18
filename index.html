@@ -107,6 +107,19 @@
     .toggles { display: flex; gap: 16px; align-items: center; }
     .switch { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--sub); }
 
+    /* Suggestions & Select Fixes */
+    .suggestions { position: absolute; top: 100%; left: 0; right: 0; background: #131b2e; border: var(--border); border-radius: 12px; margin-top: 4px; z-index: 100; overflow: hidden; box-shadow: var(--shadow); display: none; max-height: 300px; overflow-y: auto; }
+    .suggestions.show { display: block; }
+    .suggestion-item { padding: 12px 14px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; font-size: 14px; }
+    .suggestion-item:hover { background: rgba(255,255,255,0.1); }
+    
+    select {
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a9b1d6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 36px; cursor: pointer;
+    }
+    select option { background: var(--bg); color: var(--fg); padding: 10px; }
+
     @media (max-width: 640px) {
       .metrics { grid-template-columns: repeat(2, 1fr); }
     }
@@ -132,9 +145,10 @@
     </header>
 
     <section class="controls glass">
-      <div class="field-group">
+      <div class="field-group" style="position: relative;">
         <label for="query">Location</label>
-        <input id="query" type="text" placeholder="e.g., London, New York, 48.85,2.35" />
+        <input id="query" type="text" placeholder="e.g., London, New York" autocomplete="off" />
+        <div id="suggestions" class="suggestions"></div>
       </div>
 
       <div class="tabs" role="tablist" aria-label="Data type">
@@ -441,6 +455,35 @@
       }));
     }
 
+    // Autocomplete
+    function setupAutocomplete() {
+      const input = qs('#query');
+      const list = qs('#suggestions');
+      let timer;
+
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        clearTimeout(timer);
+        list.classList.remove('show');
+        if (val.length < 3) return;
+
+        timer = setTimeout(async () => {
+          try {
+            const url = buildURL('/autocomplete', { query: val });
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.results) {
+              list.innerHTML = data.results.map(i => `<div class="suggestion-item" data-val="${i.name}"><strong>${i.name}</strong> <span style="opacity:0.6; font-size:0.9em">${i.region||''}, ${i.country||''}</span></div>`).join('');
+              list.classList.add('show');
+              qsa('.suggestion-item', list).forEach(el => el.addEventListener('click', () => { input.value = el.dataset.val; list.classList.remove('show'); }));
+            }
+          } catch(e) { console.warn(e); }
+        }, 400);
+      });
+      
+      document.addEventListener('click', (e) => { if (!e.target.closest('.field-group')) list.classList.remove('show'); });
+    }
+
     // Events
     function setupEvents() {
       qs('#btn-geolocate').addEventListener('click', geolocateToInput);
@@ -463,6 +506,7 @@
     // Init
     (function init() {
       setupTabs();
+      setupAutocomplete();
       setupEvents();
       // Suggest geolocation on load (non-blocking)
       if (!qs('#query').value) geolocateToInput();
