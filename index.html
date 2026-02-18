@@ -123,6 +123,10 @@
     .btn-clear.show { display: flex; }
     #query { padding-right: 40px; }
 
+    .recent-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; font-size: 11px; color: var(--sub); background: rgba(255,255,255,0.03); }
+    .btn-text { background: none; border: none; color: var(--sub); cursor: pointer; font-size: 11px; padding: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-text:hover { color: var(--err); }
+
     select {
       appearance: none; -webkit-appearance: none;
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a9b1d6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -505,9 +509,19 @@
       const showRecents = () => {
         const recents = getRecents();
         if (!recents.length) return;
-        list.innerHTML = '<div style="padding:8px 12px; font-size:11px; color:var(--sub); text-transform:uppercase; letter-spacing:1px; background:rgba(255,255,255,0.03);">Recent Searches</div>' + 
-          recents.map(r => `<div class="suggestion-item" data-val="${r}">🕒 ${r}</div>`).join('');
+        list.innerHTML = `
+          <div class="recent-header">
+            <span style="text-transform:uppercase; letter-spacing:1px;">Recent Searches</span>
+            <button id="clear-recents" class="btn-text">Clear</button>
+          </div>
+        ` + recents.map(r => `<div class="suggestion-item" data-val="${r}">🕒 ${r}</div>`).join('');
         list.classList.add('show');
+        
+        qs('#clear-recents', list).addEventListener('click', (e) => {
+          e.stopPropagation();
+          localStorage.removeItem('weather_recents');
+          list.classList.remove('show');
+        });
         attachClicks();
       };
 
