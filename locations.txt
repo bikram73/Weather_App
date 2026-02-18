@@ -1,0 +1,51 @@
+New York, United States
+London, United Kingdom
+Paris, France
+Tokyo, Japan
+California, United States
+Texas, United States
+Florida, United States
+Berlin, Germany
+Moscow, Russia
+Beijing, China
+Sydney, Australia
+Mumbai, India
+Kolkata, India
+Dubai, United Arab Emirates
+Toronto, Canada
+Rome, Italy
+Madrid, Spain
+Seoul, South Korea
+Sao Paulo, Brazil
+Mexico City, Mexico
+Jakarta, Indonesia
+Istanbul, Turkey
+Cairo, Egypt
+Lagos, Nigeria
+Buenos Aires, Argentina
+Bangkok, Thailand
+Singapore, Singapore
+Hong Kong, China
+Shanghai, China
+Los Angeles, United States
+Chicago, United States
+Houston, United States
+Phoenix, United States
+Philadelphia, United States
+San Antonio, United States
+San Diego, United States
+Dallas, United States
+San Jose, United States
+Ontario, Canada
+Quebec, Canada
+British Columbia, Canada
+New South Wales, Australia
+Victoria, Australia
+Queensland, Australia
+Maharashtra, India
+Delhi, India
+Karnataka, India
+Bavaria, Germany
+Ile-de-France, France
+Lombardy, Italy
+Catalonia, Spain
