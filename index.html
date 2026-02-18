@@ -113,6 +113,16 @@
     .suggestion-item { padding: 12px 14px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; font-size: 14px; }
     .suggestion-item:hover { background: rgba(255,255,255,0.1); }
     
+    .btn-clear {
+      position: absolute; right: 0; bottom: 0; width: 40px; height: 40px;
+      background: transparent; border: none; color: var(--sub);
+      font-size: 24px; cursor: pointer; display: none;
+      align-items: center; justify-content: center; z-index: 10;
+    }
+    .btn-clear:hover { color: var(--fg); }
+    .btn-clear.show { display: flex; }
+    #query { padding-right: 40px; }
+
     select {
       appearance: none; -webkit-appearance: none;
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a9b1d6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -148,6 +158,7 @@
       <div class="field-group" style="position: relative;">
         <label for="query">Location</label>
         <input id="query" type="text" placeholder="e.g., London, New York" autocomplete="off" />
+        <button id="clear-query" class="btn-clear" aria-label="Clear" title="Clear search">&times;</button>
         <div id="suggestions" class="suggestions"></div>
       </div>
 
@@ -288,6 +299,7 @@
             const { latitude, longitude } = pos.coords;
             const val = `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
             qs('#query').value = val;
+            qs('#clear-query').classList.add('show');
             setStatus(`Using current location: ${val}`, 'success');
             resolve(val);
           },
@@ -459,10 +471,23 @@
     function setupAutocomplete() {
       const input = qs('#query');
       const list = qs('#suggestions');
+      const clearBtn = qs('#clear-query');
       let timer;
+
+      if (input.value.trim()) clearBtn.classList.add('show');
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.classList.remove('show');
+        list.classList.remove('show');
+        input.focus();
+      });
 
       input.addEventListener('input', (e) => {
         const val = e.target.value.trim();
+        if (val) clearBtn.classList.add('show');
+        else clearBtn.classList.remove('show');
+
         clearTimeout(timer);
         list.classList.remove('show');
         if (val.length < 3) return;
@@ -480,6 +505,7 @@
               list.classList.add('show');
               qsa('.suggestion-item', list).forEach(el => el.addEventListener('click', () => {
                 input.value = el.dataset.val;
+                clearBtn.classList.add('show');
                 list.classList.remove('show');
                 const active = qs('.tab.active').dataset.tab;
                 if (active === 'current') getCurrent().catch(e => setStatus(e.message, 'error'));
