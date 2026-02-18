@@ -174,15 +174,15 @@
     </header>
 
     <section class="controls glass">
-      <div class="field-group" style="position: relative;">
+      <form class="field-group" style="position: relative;">
         <label for="query">Location</label>
         <input id="query" type="text" placeholder="e.g., London, New York" autocomplete="off" />
-        <button id="clear-query" class="btn-clear" aria-label="Clear" title="Clear search">&times;</button>
-        <button id="expand-query" class="btn-expand" aria-label="Show suggestions" title="Show suggestions">
+        <button type="button" id="clear-query" class="btn-clear" aria-label="Clear" title="Clear search">&times;</button>
+        <button type="button" id="expand-query" class="btn-expand" aria-label="Show suggestions" title="Show suggestions">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
         <div id="suggestions" class="suggestions"></div>
-      </div>
+      </form>
 
       <div class="tabs" role="tablist" aria-label="Data type">
         <button class="tab active" role="tab" aria-selected="true" data-tab="current">Current</button>
@@ -676,14 +676,13 @@
       qs('#fetch-marine').addEventListener('click', () => getMarine().catch(e => setStatus(e.message, 'error')));
       qs('#toggle-raw').addEventListener('change', (e) => toggleRawVisible(e.target.checked));
 
-      // Submit on Enter
-      qs('#query').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          const active = qs('.tab.active').dataset.tab;
-          if (active === 'current') getCurrent().catch(e => setStatus(e.message, 'error'));
-          if (active === 'historical') getHistorical().catch(e => setStatus(e.message, 'error'));
-          if (active === 'marine') getMarine().catch(e => setStatus(e.message, 'error'));
-        }
+      // Submit on Enter / Mobile Go
+      qs('form.field-group').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const active = qs('.tab.active').dataset.tab;
+        if (active === 'current') getCurrent().catch(e => setStatus(e.message, 'error'));
+        if (active === 'historical') getHistorical().catch(e => setStatus(e.message, 'error'));
+        if (active === 'marine') getMarine().catch(e => setStatus(e.message, 'error'));
       });
     }
 
